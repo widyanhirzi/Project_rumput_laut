@@ -1,0 +1,39 @@
+# ── Virtual Environment ──
+venv/
+.venv/
+env/
+
+# ── Dataset folders (large binary files) ──
+Kappaphycus_alvarezii_datasets/
+Kappaphycus_striatum_datasets/
+dataset_coklat_roboflow/
+dataset_gabung/
+dataset_hijau/
+mixed_datasets/
+dataset_gabung_80/
+
+# ── Dataset archives ──
+*.zip
+
+# ── YOLO pretrained weights & checkpoints ──
+*.pt
+*.onnx
+*.torchscript
+
+# ── Training & prediction runs (output artifacts) ──
+runs/
+results/
+
+# ── Python cache ──
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# ── Jupyter ──
+.ipynb_checkpoints/
+
+# ── OS files ──
+.DS_Store
+Thumbs.db
+desktop.ini
