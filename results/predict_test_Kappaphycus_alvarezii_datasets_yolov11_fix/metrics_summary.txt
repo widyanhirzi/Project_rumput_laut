@@ -1,0 +1,33 @@
+YOLOv11 Classification Evaluation - TEST
+Timestamp : 2026-11-15 00:37:07
+Model     : E:\project_rumput_laut\runs\classify\Kappaphycus_alvarezii_datasets_yolov11_fix\weights\best.pt
+Dataset   : E:\project_rumput_laut\Kappaphycus_alvarezii_datasets_fix\test
+==================================================
+Accuracy          : 0.9082  (90.82%)
+Precision (macro) : 0.8788  (87.88%)
+Recall    (macro) : 0.8489  (84.89%)
+F1-Score  (macro) : 0.8608  (86.08%)
+==================================================
+
+PER-CLASS REPORT:
+                 precision    recall  f1-score   support
+
+algae_infection     1.0000    0.9655    0.9825        87
+        healthy     0.8539    0.9383    0.8941        81
+        ice-ice     0.7826    0.6429    0.7059        28
+
+       accuracy                         0.9082       196
+      macro avg     0.8788    0.8489    0.8608       196
+   weighted avg     0.9086    0.9082    0.9064       196
+
+CONFUSION MATRIX - Raw Counts (Rows=GT, Cols=Pred):
+                algae_infection        healthy        ice-ice
+  algae_infection             84              3              0
+  healthy                     0             76              5
+  ice-ice                     0             10             18
+
+CONFUSION MATRIX - Normalized (Rows=GT, Cols=Pred):
+                algae_infection        healthy        ice-ice
+  algae_infection         0.9655         0.0345         0.0000
+  healthy                0.0000         0.9383         0.0617
+  ice-ice                0.0000         0.3571         0.6429

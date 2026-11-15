@@ -4,25 +4,35 @@ venv/
 env/
 
 # ── Dataset folders (large binary files) ──
-Kappaphycus_alvarezii_datasets/
-Kappaphycus_striatum_datasets/
-dataset_coklat_roboflow/
-dataset_gabung/
-dataset_hijau/
-mixed_datasets/
-dataset_gabung_80/
-
-# ── Dataset archives ──
+*_datasets*/
+*_raw*/
+dataset_*/
+*.cache
+*.cr2
+*.CR2
+*.7z
+_features.pkl
 *.zip
 
-# ── YOLO pretrained weights & checkpoints ──
-*.pt
+# ── YOLO pretrained root weights ──
+/yolo*.pt
 *.onnx
 *.torchscript
 
 # ── Training & prediction runs (output artifacts) ──
-runs/
-results/
+# Ignore all results except the 3 fix test results
+results/*
+!results/predict_test_Kappaphycus_alvarezii_datasets_yolov11_fix/
+!results/predict_test_Kappaphycus_striatum_datasets_yolov11_fix/
+!results/predict_test_mixed_datasets_yolov11_fix/
+
+# Ignore all runs except the 3 fix classify runs
+runs/*
+!runs/classify/
+runs/classify/*
+!runs/classify/Kappaphycus_alvarezii_datasets_yolov11_fix/
+!runs/classify/Kappaphycus_striatum_datasets_yolov11_fix/
+!runs/classify/mixed_datasets_yolov11_fix/
 
 # ── Python cache ──
 __pycache__/

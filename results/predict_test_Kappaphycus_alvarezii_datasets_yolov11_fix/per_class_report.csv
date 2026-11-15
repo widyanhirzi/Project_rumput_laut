@@ -1,0 +1,7 @@
+Class,Precision,Recall,F1-Score,Support
+algae_infection,1.0000,0.9655,0.9825,87
+healthy,0.8539,0.9383,0.8941,81
+ice-ice,0.7826,0.6429,0.7059,28
+
+macro avg,0.8788,0.8489,0.8608,196
+accuracy,0.9082,,,196

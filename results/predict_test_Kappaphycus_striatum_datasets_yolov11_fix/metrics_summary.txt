@@ -1,0 +1,33 @@
+YOLOv11 Classification Evaluation - TEST
+Timestamp : 2026-11-15 01:10:04
+Model     : E:\project_rumput_laut\runs\classify\Kappaphycus_striatum_datasets_yolov11_fix\weights\best.pt
+Dataset   : E:\project_rumput_laut\Kappaphycus_striatum_datasets_fix\test
+==================================================
+Accuracy          : 0.8819  (88.19%)
+Precision (macro) : 0.8861  (88.61%)
+Recall    (macro) : 0.8796  (87.96%)
+F1-Score  (macro) : 0.8705  (87.05%)
+==================================================
+
+PER-CLASS REPORT:
+                 precision    recall  f1-score   support
+
+algae_infection     0.9500    1.0000    0.9744        57
+        healthy     0.7083    0.9189    0.8000        37
+        ice-ice     1.0000    0.7200    0.8372        50
+
+       accuracy                         0.8819       144
+      macro avg     0.8861    0.8796    0.8705       144
+   weighted avg     0.9053    0.8819    0.8819       144
+
+CONFUSION MATRIX - Raw Counts (Rows=GT, Cols=Pred):
+                algae_infection        healthy        ice-ice
+  algae_infection             57              0              0
+  healthy                     3             34              0
+  ice-ice                     0             14             36
+
+CONFUSION MATRIX - Normalized (Rows=GT, Cols=Pred):
+                algae_infection        healthy        ice-ice
+  algae_infection         1.0000         0.0000         0.0000
+  healthy                0.0811         0.9189         0.0000
+  ice-ice                0.0000         0.2800         0.7200

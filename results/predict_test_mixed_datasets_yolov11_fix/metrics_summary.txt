@@ -1,0 +1,33 @@
+YOLOv11 Classification Evaluation - TEST
+Timestamp : 2026-11-15 00:33:37
+Model     : E:\project_rumput_laut\runs\classify\mixed_datasets_yolov11_fix\weights\best.pt
+Dataset   : E:\project_rumput_laut\mixed_datasets_fix\test
+==================================================
+Accuracy          : 0.9176  (91.76%)
+Precision (macro) : 0.9159  (91.59%)
+Recall    (macro) : 0.8953  (89.53%)
+F1-Score  (macro) : 0.9028  (90.28%)
+==================================================
+
+PER-CLASS REPORT:
+                 precision    recall  f1-score   support
+
+algae_infection     0.9662    0.9931    0.9795       144
+        healthy     0.8583    0.9237    0.8898       118
+        ice-ice     0.9231    0.7692    0.8392        78
+
+       accuracy                         0.9176       340
+      macro avg     0.9159    0.8953    0.9028       340
+   weighted avg     0.9189    0.9176    0.9162       340
+
+CONFUSION MATRIX - Raw Counts (Rows=GT, Cols=Pred):
+                algae_infection        healthy        ice-ice
+  algae_infection            143              1              0
+  healthy                     4            109              5
+  ice-ice                     1             17             60
+
+CONFUSION MATRIX - Normalized (Rows=GT, Cols=Pred):
+                algae_infection        healthy        ice-ice
+  algae_infection         0.9931         0.0069         0.0000
+  healthy                0.0339         0.9237         0.0424
+  ice-ice                0.0128         0.2179         0.7692

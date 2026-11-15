@@ -24,8 +24,8 @@ from datetime import datetime
 # CONFIGURATION
 # ─────────────────────────────────────────────
 BASE_DIR     = Path(__file__).resolve().parent
-MODEL_PATH   = BASE_DIR / "runs" / "classify" / "Kappaphycus_alvarezii_datasets_yolov11" / "weights" / "best.pt"
-DATASET_PATH = Path(r"E:\project_rumput_laut\Kappaphycus_alvarezii_datasets")
+MODEL_PATH   = BASE_DIR / "runs" / "classify" / "Kappaphycus_striatum_datasets_yolov11_fix" / "weights" / "best.pt"
+DATASET_PATH = Path(r"E:\project_rumput_laut\Kappaphycus_striatum_datasets_fix")
 RESULTS_DIR  = BASE_DIR / "results"          # main folder for saving results
 SPLIT        = "test"       # split to evaluate: "test" | "val" | "train"
 IMGSZ        = 224

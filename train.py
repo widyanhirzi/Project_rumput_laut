@@ -11,12 +11,12 @@ import time
 # ─────────────────────────────────────────────
 # KONFIGURASI TRAINING
 # ─────────────────────────────────────────────
-DATASET_PATH = r"E:\project_rumput_laut\Kappaphycus_striatum_datasets"
+DATASET_PATH = r"E:\project_rumput_laut\mixed_datasets_fix"
 
 # Folder penyimpanan hasil training (absolut, mengikuti lokasi train.py)
 BASE_DIR     = Path(__file__).resolve().parent
 PROJECT_NAME = str(BASE_DIR / "runs" / "classify")
-RUN_NAME     = "Kappaphycus_striatum_datasets_yolov11"
+RUN_NAME     = "mixed_datasets_yolov11_fix"
 
 # Model YOLOv11 Classification
 # Pilihan: yolo11n-cls.pt | yolo11s-cls.pt | yolo11m-cls.pt | yolo11l-cls.pt | yolo11x-cls.pt
