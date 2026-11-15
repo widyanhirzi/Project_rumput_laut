@@ -1,6 +1,6 @@
 """
-Training YOLOv11 Classification - Dataset Rumput Laut Coklat
-Kelas: BULU_KUCING, SAKIT, SEHAT
+Training YOLOv11 Classification - Seaweed Disease Dataset
+Classes: algae_infection, healthy, ice-ice
 """
 
 import torch
@@ -9,49 +9,49 @@ from pathlib import Path
 import time
 
 # ─────────────────────────────────────────────
-# KONFIGURASI TRAINING
+# TRAINING CONFIGURATION
 # ─────────────────────────────────────────────
 DATASET_PATH = r"E:\project_rumput_laut\mixed_datasets_fix"
 
-# Folder penyimpanan hasil training (absolut, mengikuti lokasi train.py)
+# Output directory for training runs (relative to train.py)
 BASE_DIR     = Path(__file__).resolve().parent
 PROJECT_NAME = str(BASE_DIR / "runs" / "classify")
 RUN_NAME     = "mixed_datasets_yolov11_fix"
 
-# Model YOLOv11 Classification
-# Pilihan: yolo11n-cls.pt | yolo11s-cls.pt | yolo11m-cls.pt | yolo11l-cls.pt | yolo11x-cls.pt
-#          (n=nano/tercepat, x=extra-large/terakurat)
+# YOLOv11 Classification Model
+# Options: yolo11n-cls.yaml | yolo11s-cls.yaml | yolo11m-cls.yaml | yolo11l-cls.yaml | yolo11x-cls.yaml
+#          (n=nano/fastest, x=extra-large/most accurate)
 MODEL        = "yolo11n-cls.yaml"
 
-# Hyperparameter
-SEED         = 42           # random seed untuk reproducibility
+# Hyperparameters
+SEED         = 42           # Random seed for reproducibility
 EPOCHS       = 300
-IMGSZ        = 224          # ukuran input gambar
-BATCH        = 32           # sesuaikan dengan VRAM (16GB bisa lebih besar)
-LR0          = 0.01         # learning rate awal
-LRF          = 0.01         # learning rate akhir (LR0 * LRF)
-PATIENCE     = 50           # early stopping (0 = nonaktif)
-WORKERS      = 8            # DataLoader workers
-DEVICE       = 0            # 0 = GPU pertama (RTX 5060 Ti)
+IMGSZ        = 224          # Input image size
+BATCH        = 32           # Adjust according to available VRAM
+LR0          = 0.01         # Initial learning rate
+LRF          = 0.01         # Final learning rate (LR0 * LRF)
+PATIENCE     = 50           # Early stopping patience (0 = disabled)
+WORKERS      = 8            # DataLoader worker processes
+DEVICE       = 0            # 0 = primary GPU
 OPTIMIZER    = "AdamW"      # SGD | Adam | AdamW | RMSProp
-AMP          = True         # Automatic Mixed Precision (hemat VRAM)
-PRETRAINED   = True         # gunakan pretrained weights
+AMP          = True         # Automatic Mixed Precision
+PRETRAINED   = True         # Use pretrained backbone weights
 
-# Augmentasi
+# Augmentation Settings
 AUGMENT      = True
-DEGREES      = 15.0         # rotasi (deg)
-FLIPLR       = 0.5          # flip horizontal
-FLIPUD       = 0.0          # flip vertikal
-HSV_H        = 0.015        # hue augmentasi
-HSV_S        = 0.7          # saturation augmentasi
-HSV_V        = 0.4          # brightness augmentasi
+DEGREES      = 15.0         # Rotation angle (degrees)
+FLIPLR       = 0.5          # Horizontal flip probability
+FLIPUD       = 0.0          # Vertical flip probability
+HSV_H        = 0.015        # Hue augmentation
+HSV_S        = 0.7          # Saturation augmentation
+HSV_V        = 0.4          # Brightness augmentation
 
 # ─────────────────────────────────────────────
 
 
 def print_banner():
     print("=" * 60)
-    print("  YOLOv11 Classification - Rumput Laut")
+    print("  YOLOv11 Classification - Seaweed Disease")
     print("=" * 60)
     print(f"  Model     : {MODEL}")
     print(f"  Dataset   : {DATASET_PATH}")
@@ -69,24 +69,24 @@ def print_banner():
 
 
 def check_dataset():
-    """Verifikasi dataset tersedia."""
+    """Verify that dataset folders and image files exist."""
     dataset = Path(DATASET_PATH)
     splits = ["train", "val", "test"]
     classes = ["algae_infection", "ice-ice", "healthy"]
 
-    print("\n Verifikasi Dataset:")
+    print("\nVerifying Dataset:")
     total = 0
     for split in splits:
         for cls in classes:
             path = dataset / split / cls
             if path.exists():
                 count = len(list(path.glob("*.jpg")) + list(path.glob("*.png")) + list(path.glob("*.jpeg")))
-                print(f"   {split:5s}/{cls:12s}: {count:4d} gambar")
+                print(f"   {split:5s}/{cls:15s}: {count:4d} images")
                 total += count
             else:
-                print(f"   PERINGATAN: {split}/{cls} tidak ditemukan!")
+                print(f"   WARNING: {split}/{cls} not found!")
     print(f"   {'-'*35}")
-    print(f"   Total               : {total:4d} gambar\n")
+    print(f"   Total               : {total:4d} images\n")
 
 
 def train():
@@ -94,14 +94,14 @@ def train():
     check_dataset()
 
     if not torch.cuda.is_available():
-        print("PERINGATAN: GPU tidak terdeteksi, training menggunakan CPU (sangat lambat)!")
+        print("WARNING: GPU not detected, training will run on CPU (very slow)!")
     else:
-        print(f"GPU: {torch.cuda.get_device_name(0)} siap digunakan\n")
+        print(f"GPU: {torch.cuda.get_device_name(0)} ready for training\n")
 
-    print(f"Memuat model: {MODEL}")
+    print(f"Loading model architecture: {MODEL}")
     model = YOLO(MODEL)
 
-    print("\nMemulai training...\n")
+    print("\nStarting training...\n")
     start_time = time.time()
 
     results = model.train(
@@ -141,23 +141,23 @@ def train():
     minutes, seconds = divmod(rem, 60)
 
     print("\n" + "=" * 60)
-    print("  Training Selesai!")
-    print(f"  Waktu total  : {int(hours)}j {int(minutes)}m {int(seconds)}s")
-    print(f"  Model terbaik: {PROJECT_NAME}/{RUN_NAME}/weights/best.pt")
-    print(f"  Folder hasil : {PROJECT_NAME}/{RUN_NAME}/")
+    print("  Training Complete!")
+    print(f"  Total time  : {int(hours)}h {int(minutes)}m {int(seconds)}s")
+    print(f"  Best model  : {PROJECT_NAME}/{RUN_NAME}/weights/best.pt")
+    print(f"  Run directory: {PROJECT_NAME}/{RUN_NAME}/")
     print("=" * 60)
 
     return results
 
 
 def validate():
-    """Evaluasi model terbaik pada data test."""
+    """Evaluate best model weights on the test split."""
     best_model_path = Path(PROJECT_NAME) / RUN_NAME / "weights" / "best.pt"
     if not best_model_path.exists():
-        print(f"Model tidak ditemukan di: {best_model_path}")
+        print(f"Model checkpoint not found at: {best_model_path}")
         return
 
-    print(f"\nEvaluasi pada data TEST...")
+    print(f"\nEvaluating on TEST split...")
     model = YOLO(str(best_model_path))
     metrics = model.val(
         data    = DATASET_PATH,

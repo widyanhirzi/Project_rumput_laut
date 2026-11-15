@@ -1,9 +1,9 @@
 """
-Script Split Dataset Rumput Laut: Kappaphycus alvarezii & Kappaphycus striatum
-- Ratio: 80% Train : 10% Val : 10% Test
-- Level: Specimen-Level Split (Grouped by Specimen/Sample to guarantee ZERO data leakage)
-- Stratifikasi: Stratified per Class (algae_infection, healthy, ice-ice)
-- Output: 
+Seaweed Dataset Splitting Pipeline: Kappaphycus alvarezii & Kappaphycus striatum
+- Target Ratio: 80% Train : 10% Val : 10% Test
+- Splitting Level: Specimen-Level Split (Grouped by Specimen/Sample to guarantee ZERO data leakage)
+- Stratification: Stratified per Disease Class (algae_infection, healthy, ice-ice)
+- Outputs:
     * Kappaphycus_alvarezii_datasets_fix/
     * Kappaphycus_striatum_datasets_fix/
 """
@@ -32,7 +32,7 @@ def parse_args():
     parser.add_argument("--train-ratio", type=float, default=0.80, help="Train split ratio (default: 0.80)")
     parser.add_argument("--val-ratio", type=float, default=0.10, help="Val split ratio (default: 0.10)")
     parser.add_argument("--test-ratio", type=float, default=0.10, help="Test split ratio (default: 0.10)")
-    parser.add_argument("--seed", type=int, default=56, help="Random seed for reproducibility.")
+    parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility.")
     parser.add_argument("--num-trials", type=int, default=3000,
                         help="Optimization trials to find best specimen partition per class.")
     parser.add_argument("--include-deleted", action="store_true", default=False,
@@ -45,7 +45,7 @@ def parse_args():
 
 
 def optimize_specimen_split(specimen_counts, train_ratio=0.8, val_ratio=0.1, test_ratio=0.1,
-                            pinned_splits=None, seed=56, num_trials=3000):
+                            pinned_splits=None, seed=42, num_trials=3000):
     """
     Partitions specimens into train, val, and test splits using a multi-seed
     greedy optimization that balances both image counts and specimen counts
@@ -146,18 +146,18 @@ def optimize_specimen_split(specimen_counts, train_ratio=0.8, val_ratio=0.1, tes
 
 def process_species(species_name, df_species, proc_dir, out_dir, args):
     print("=" * 80)
-    print(f"MEMPROSES SPESIES: {species_name}")
-    print(f"Folder Sumber : {proc_dir}")
-    print(f"Folder Tujuan : {out_dir}")
+    print(f"PROCESSING SPECIES: {species_name}")
+    print(f"Source Folder : {proc_dir}")
+    print(f"Target Folder : {out_dir}")
     print("=" * 80)
 
     # 1. Filter rows
     if not args.include_deleted:
         sub_df = df_species[df_species["Train/Val/Test"] != "Deleted"].copy()
-        print(f"Filter mode: Hanya menyertakan data bersih (non-deleted). Total: {len(sub_df)} baris.")
+        print(f"Filter mode: Including curated clean data only (non-deleted). Total: {len(sub_df)} rows.")
     else:
         sub_df = df_species.copy()
-        print(f"Filter mode: Menyertakan seluruh data (termasuk deleted). Total: {len(sub_df)} baris.")
+        print(f"Filter mode: Including all data (including deleted/blurry). Total: {len(sub_df)} rows.")
 
     # 2. Map processed files
     # Scan class directories in proc_dir
@@ -194,11 +194,11 @@ def process_species(species_name, df_species, proc_dir, out_dir, args):
                 "proc_path": full_p
             })
         else:
-            print(f"  [Peringatan] File tidak ditemukan di processed: {cls}/{raw_fname}")
+            print(f"  [Warning] File not found in processed directory: {cls}/{raw_fname}")
 
     df_matched = pd.DataFrame(matched_entries)
-    print(f"Berhasil mencocokkan {len(df_matched)} gambar dengan metadata spesimen.")
-    print(f"Jumlah spesimen unik: {df_matched['Sample'].nunique()}")
+    print(f"Successfully matched {len(df_matched)} images with specimen metadata.")
+    print(f"Number of unique specimens: {df_matched['Sample'].nunique()}")
 
     # Check for any overlapping sample numbers across classes (e.g. 250, 251 in alvarezii)
     # Pin them to 'train' to ensure zero leakage even by pure sample number
@@ -213,8 +213,8 @@ def process_species(species_name, df_species, proc_dir, out_dir, args):
 
     pinned_splits = {}
     if shared_samples:
-        print(f"  * Ditemukan spesimen dengan nomor ID yang beririsan antar-kelas: {sorted(shared_samples)}")
-        print(f"    -> Mengunci (pin) spesimen tersebut ke split 'train' agar 0 leakage secara absolut!")
+        print(f"  * Detected specimen IDs shared across classes: {sorted(shared_samples)}")
+        print(f"    -> Pinning shared specimens to 'train' to guarantee zero leakage!")
         for s in shared_samples:
             pinned_splits[s] = "train"
 
@@ -280,9 +280,9 @@ def process_species(species_name, df_species, proc_dir, out_dir, args):
 
     # 4. Display Summary Table
     print("\n" + "-" * 115)
-    print(f"{'RINGKASAN PEMBAGIAN DATASET (80:10:10) PER KELAS & SPESIMEN':^115}")
+    print(f"{'DATASET SPLIT SUMMARY (80:10:10) PER CLASS & SPECIMEN':^115}")
     print("-" * 115)
-    print(f"{'Kelas':<18} | {'Total Img':>9} | {'Spesimen':>8} | {'Train Img (%)':>15} {'(Specs)':>8} | {'Val Img (%)':>13} {'(Specs)':>8} | {'Test Img (%)':>14} {'(Specs)':>8}")
+    print(f"{'Class':<18} | {'Total Img':>9} | {'Specs':>8} | {'Train Img (%)':>15} {'(Specs)':>8} | {'Val Img (%)':>13} {'(Specs)':>8} | {'Test Img (%)':>14} {'(Specs)':>8}")
     print("-" * 115)
 
     tot_imgs = sum(s["Total_Images"] for s in summary_stats)
@@ -314,16 +314,13 @@ def process_species(species_name, df_species, proc_dir, out_dir, args):
 
     overlap = (tr_samples & va_samples) | (tr_samples & te_samples) | (va_samples & te_samples)
     if len(overlap) == 0:
-        print(f"[VERIFIKASI SUKSES] ZERO DATA LEAKAGE: 100% spesimen tidak tumpang tindih antar train, val, dan test!")
+        print(f"[VERIFICATION SUCCESS] ZERO DATA LEAKAGE: 100% of specimens are disjoint across train, val, and test!")
     else:
-        raise ValueError(f"[ERROR] Data leakage terdeteksi pada spesimen: {overlap}")
+        raise ValueError(f"[ERROR] Data leakage detected on specimens: {overlap}")
 
     # 6. Copy Files to Final Folders
     if not args.dry_run:
-        print(f"\nMenyalin file ke folder tujuan: {out_dir} ...")
-        # Clean / create output dirs
-        if os.path.exists(out_dir):
-            shutil.rmtree(out_dir)
+        print(f"\nCopying images to target directory: {out_dir} ...")
         for split in ["train", "val", "test"]:
             for cls in classes:
                 dest_dir = os.path.join(out_dir, split, cls)
@@ -336,9 +333,9 @@ def process_species(species_name, df_species, proc_dir, out_dir, args):
             shutil.copy2(src, dest)
             copied_count += 1
 
-        print(f"Selesai! Sebanyak {copied_count} file berhasil disalin ke '{out_dir}'.")
+        print(f"Complete! Successfully copied {copied_count} files to '{out_dir}'.")
     else:
-        print(f"\n[Dry Run] Mode simulasi aktif. Tidak ada file yang disalin.")
+        print(f"\n[Dry Run] Simulation active. No files copied.")
 
     return df_species_splits
 
@@ -347,18 +344,18 @@ def main():
     args = parse_args()
 
     print("\n" + "=" * 80)
-    print("SPLIT DATASET RUMPUT LAUT: SPECIMEN-LEVEL & STRATIFIED (80:10:10)")
+    print("SEAWEED DATASET SPLIT: SPECIMEN-LEVEL & STRATIFIED (80:10:10)")
     print("=" * 80)
-    print(f"Rasio Target       : Train={args.train_ratio*100:.0f}%, Val={args.val_ratio*100:.0f}%, Test={args.test_ratio*100:.0f}%")
+    print(f"Target Ratio       : Train={args.train_ratio*100:.0f}%, Val={args.val_ratio*100:.0f}%, Test={args.test_ratio*100:.0f}%")
     print(f"Random Seed        : {args.seed}")
     print(f"Filter Deleted     : {not args.include_deleted}")
     print(f"Metadata CSV       : {args.csv}")
 
     if not os.path.exists(args.csv):
-        raise FileNotFoundError(f"File CSV '{args.csv}' tidak ditemukan!")
+        raise FileNotFoundError(f"CSV file '{args.csv}' not found!")
 
     df = pd.read_csv(args.csv)
-    print(f"Total baris dalam CSV: {len(df)}")
+    print(f"Total rows in CSV: {len(df)}")
 
     # Add column Split_Fix in master dataframe
     df["Split_Fix"] = "Excluded"
@@ -393,12 +390,12 @@ def main():
     if not args.dry_run:
         df.to_csv(args.output_csv, index=False)
         print("\n" + "=" * 80)
-        print(f"Metadata pembagian split tersimpan di: '{args.output_csv}'")
-        print("PROSES SELESAI DENGAN SUKSES!")
+        print(f"Split metadata successfully saved to: '{args.output_csv}'")
+        print("PIPELINE COMPLETED SUCCESSFULLY!")
         print("=" * 80 + "\n")
     else:
         print("\n" + "=" * 80)
-        print(f"[Dry Run] Simulasi selesai. Jalankan tanpa --dry-run untuk membuat folder dan menyalin file.")
+        print(f"[Dry Run] Simulation complete. Run without --dry-run to generate directories and copy files.")
         print("=" * 80 + "\n")
 
 
